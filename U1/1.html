@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kompiuterinė grafika | Užduotis 1 | Dalis 1</title>
+</head>
+<body>
+    <div style="text-align: center;">
+        <div style="margin: 25px;">
+            <label for="zingsnioLaukas">Žingsnis:</label>
+            <input type="number" id="zingsnioLaukas" style="height: 20px" step="1" min="0" oninput="zingsnioLaukoPokytis()" />
+            <input type="range" id="zingsnioSlankiklis" style="width: 400px" step="1" min="0" max="7" oninput="zingsnioSlankiklioPokytis()" />
+        </div>
+        <div style="margin: 25px;">
+            <canvas id="canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        //
+        // Fraktalo piešimas
+        //
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext("2d");
+        let visiZingsniai = 6;
+
+        function piesti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            piestiFraktala(visiZingsniai);
+        }
+
+        function piestiFraktala(zingsnis) {
+            if (zingsnis > 0) {
+                // Transformacija 1
+                ctx.save();
+                if (zingsnis === visiZingsniai){
+                    ctx.fillStyle = 'red';
+                }
+                ctx.transform(0, 0.25, 0.25, 0, 125, 125);
+                piestiFraktala(zingsnis - 1);
+                ctx.restore();
+
+                // Transformacija 2
+                ctx.save();
+                if (zingsnis === visiZingsniai){
+                    ctx.fillStyle = 'green';
+                }
+                ctx.transform(0.5, 0, 0, 0.5, 250, 0);
+                piestiFraktala(zingsnis - 1);
+                ctx.restore();
+
+                // Transformacija 3
+                ctx.save();
+                if (zingsnis === visiZingsniai){
+                    ctx.fillStyle = 'blue';
+                }
+                ctx.transform(0, -0.5, -0.5, 0, 250, 500);
+                piestiFraktala(zingsnis - 1);
+                ctx.restore();
+
+                // Transformacija 4
+                ctx.save();
+                if (zingsnis === visiZingsniai){
+                    ctx.fillStyle = 'purple';
+                }
+                ctx.transform(-0.5, 0, 0, -0.5, 500, 500);
+                piestiFraktala(zingsnis - 1);
+                ctx.restore();
+            } else {
+                piestiFigura();
+            }
+        }
+
+        function piestiFigura() {
+            const w = canvas.width, h = canvas.height;
+            ctx.beginPath();
+            ctx.moveTo(w, 0);
+            ctx.lineTo(w, h*(2/3));
+            ctx.lineTo(w/2, h);
+            ctx.lineTo(w/2, h*(2/3));
+            ctx.lineTo(0, h);
+            ctx.lineTo(0, h*(2/3));
+            ctx.fill();
+        }
+
+        piesti();
+
+        //
+        // Vartotojo sąsaja
+        //
+
+        const zingsnioLaukas = document.getElementById('zingsnioLaukas');
+        const zingsnioSlankiklis = document.getElementById('zingsnioSlankiklis');
+
+        function zingsnioLaukoPokytis() {
+            visiZingsniai = zingsnioLaukas.value;
+            zingsnioSlankiklis.value = visiZingsniai;
+            piesti();
+        }
+
+        function zingsnioSlankiklioPokytis() {
+            visiZingsniai = zingsnioSlankiklis.value;
+            zingsnioLaukas.value = visiZingsniai;
+            piesti();
+        }
+
+        zingsnioLaukas.value = visiZingsniai;
+        zingsnioSlankiklis.value = visiZingsniai;
+    </script>
+</body>
+</html>
