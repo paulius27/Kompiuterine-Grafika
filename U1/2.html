@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Kompiuterinė grafika | Užduotis 1 | Dalis 2</title>
+    <style>
+        input[type=button] {
+            width: 35px;
+            height: 35px;
+            margin: 5px;
+            border: 5px solid black;
+        }
+
+        input[type=range] { width: 500px; }
+
+        canvas { border: 1px solid black; }
+
+        main { text-align: center; }
+
+        div { margin: 25px; }
+    </style>
+</head>
+<body>
+    <main>
+        <div>
+            <label for="animacijosSlankiklis">Animacija:</label>
+            <input type="button" style="border-color: red"    value="1" onclick="animacijosMygtukas(1)" />
+            <input type="button" style="border-color: green"  value="2" onclick="animacijosMygtukas(2)" />
+            <input type="button" style="border-color: blue"   value="3" onclick="animacijosMygtukas(3)" />
+            <input type="button" style="border-color: purple" value="4" onclick="animacijosMygtukas(4)" />
+        </div>
+        <div>
+            <input type="range" id="animacijosSlankiklis" value="0" step="0.01" min="0" max="1" oninput="animacijosSlankiklioPokytis()" />
+        </div>
+        <div>
+            <canvas id="canvas" width="500" height="500"></canvas>
+        </div>
+    </main>
+    <script type="text/javascript">
+
+        //
+        // Piešimas
+        //
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext("2d");
+
+        function piesti(id) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (id === 1)
+                transformacija1(animacijosLaikas);
+            else if (id === 2)
+                transformacija2(animacijosLaikas);
+            else if (id === 3)
+                transformacija3(animacijosLaikas);
+            else if (id === 4)
+                transformacija4(animacijosLaikas);
+        }
+
+        function piestiFigura() {
+            const w = canvas.width, h = canvas.height;
+            ctx.beginPath();
+            ctx.moveTo(w, 0);
+            ctx.lineTo(w, h*(2/3));
+            ctx.lineTo(w/2, h);
+            ctx.lineTo(w/2, h*(2/3));
+            ctx.lineTo(0, h);
+            ctx.lineTo(0, h*(2/3));
+            ctx.fill();
+        }
+
+        ctx.fillStyle = 'red';
+        piestiFigura();
+
+        //
+        // Transformacijos
+        //
+
+        let dabartineTransformacija = 1;
+
+        function transformacija1(t) {
+            ctx.save();
+            ctx.translate(125*t, 125*t);
+            ctx.rotate(Math.PI * (-1/2) * t);
+            ctx.scale((1-t) + t*(-0.25), (1-t) + t*0.25);
+            ctx.fillStyle = 'red';
+            piestiFigura();
+            ctx.restore();
+        }
+
+        function transformacija2(t) {
+            ctx.save();
+            ctx.translate(250*t, 0);
+            ctx.scale((1-t) + t*0.5, (1-t) + t*0.5);
+            ctx.fillStyle = 'green';
+            piestiFigura();
+            ctx.restore();
+        }
+
+        function transformacija3(t) {
+            ctx.save();
+            ctx.translate(250*t, 500*t);
+            ctx.rotate(Math.PI / 2 * t);
+            // ctx.rotate(Math.PI * (-3/2) * t);
+            ctx.scale((1-t) + t*(-0.5), (1-t) + t*0.5);
+            ctx.fillStyle = 'blue';
+            piestiFigura();
+            ctx.restore();
+        }
+
+        function transformacija4(t) {
+            ctx.save();
+            ctx.translate(500*t, 500*t);
+            ctx.rotate(-Math.PI*t);
+            ctx.scale((1-t) + t*0.5, (1-t) + t*0.5);
+            ctx.fillStyle = 'purple';
+            piestiFigura();
+            ctx.restore();
+        }
+
+        //
+        // Animacija
+        //
+
+        const fps = 60;
+        const animacijosGreitis = 0.01;
+
+        let animacijosLaikas = 0;
+
+        function vykdytiAnimacija(id, animacijaPasibaige) {
+            animacijosLaikas = 0;
+
+            let animacijosIntervalas = setInterval(() => {
+                const zingsnioPokytis = (1/fps * animacijosGreitis) / (1/60);
+                animacijosLaikas = Math.min(animacijosLaikas + zingsnioPokytis, 1);
+
+                piesti(id);
+
+                if (animacijosLaikas >= 1) {
+                    clearInterval(animacijosIntervalas);
+                    animacijaPasibaige();
+                }
+            }, Math.round(1000 / fps));
+        }
+
+        //
+        // Vartotojo sąsaja
+        //
+
+        const animacijosSlankiklis = document.getElementById('animacijosSlankiklis');
+
+        function ijungtiVartotojoSasaja() {
+            document.querySelectorAll('input').forEach(e => {
+                e.disabled = false;
+            });
+        }
+
+        function isjungtiVartotojoSasaja() {
+            document.querySelectorAll('input').forEach(e => {
+                e.disabled = true;
+            });
+        }
+
+        function animacijosMygtukas(id) {
+            dabartineTransformacija = id;
+            isjungtiVartotojoSasaja();
+
+            vykdytiAnimacija(dabartineTransformacija, () => {
+                animacijosSlankiklis.value = animacijosLaikas;
+                ijungtiVartotojoSasaja();
+            });
+        }
+
+        function animacijosSlankiklioPokytis() {
+            animacijosLaikas = animacijosSlankiklis.value;
+            piesti(dabartineTransformacija);
+        }
+    </script>
+</body>
+</html>
